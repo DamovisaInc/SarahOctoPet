@@ -33,22 +33,24 @@ jobs:
       run: dotnet publish ${{ github.workspace }}\OctopusSamples.OctoPetShop.ShoppingCartService\OctopusSamples.OctoPetShop.ShoppingCartService.csproj --configuration ${{ env.BuildConfiguration }} --output ${{ github.workspace }}\output\OctoPetShop.ShoppingCartService\
     # We now pack the files created into zip files
     - name: Package OctopusSamples.OctoPetShop.Database
-      run: octo pack --id=OctopusSamples.OctoPetShop.Database --format=Zip --version=${{ github.run_number }} --basePath=${{ github.workspace }}\output\OctoPetShop.Database\ --outFolder=${{ github.workspace }}\output
+      run: octo pack --id=OctopusSamples.OctoPetShop.Database --format=Zip --version=1.${{ github.run_number }}.0 --basePath=${{ github.workspace }}\output\OctoPetShop.Database\ --outFolder=${{ github.workspace }}\output
     - name: Package OctopusSamples.OctoPetShop.Web
-      run: octo pack --id=OctopusSamples.OctoPetShop.Web --format=Zip --version=${{ github.run_number }} --basePath=${{ github.workspace }}\output\OctoPetShop.Web\ --outFolder=${{ github.workspace }}\output
+      run: octo pack --id=OctopusSamples.OctoPetShop.Web --format=Zip --version=1.${{ github.run_number }}.0 --basePath=${{ github.workspace }}\output\OctoPetShop.Web\ --outFolder=${{ github.workspace }}\output
     - name: Package OctopusSamples.OctoPetShop.ProductService
-      run: octo pack --id=OctopusSamples.OctoPetShop.ProductService --format=Zip --version=${{ github.run_number }} --basePath=${{ github.workspace }}\output\OctoPetShop.ProductService\ --outFolder=${{ github.workspace }}\output
+      run: octo pack --id=OctopusSamples.OctoPetShop.ProductService --format=Zip --version=1.${{ github.run_number }}.0 --basePath=${{ github.workspace }}\output\OctoPetShop.ProductService\ --outFolder=${{ github.workspace }}\output
     - name: Package OctopusSamples.Octopetshop.ShoppingCartService
-      run: octo pack --id=OctopusSamples.OctoPetShop.ShoppingCartService --format=Zip --version=${{ github.run_number }} --basePath=${{ github.workspace }}\output\OctoPetShop.ShoppingCartService\ --outFolder=${{ github.workspace }}\output
+      run: octo pack --id=OctopusSamples.OctoPetShop.ShoppingCartService --format=Zip --version=1.${{ github.run_number }}.0 --basePath=${{ github.workspace }}\output\OctoPetShop.ShoppingCartService\ --outFolder=${{ github.workspace }}\output
     # We then take the files and push them to the Octopus Deploy server
     - name: Push OctoPetShop Database
-      run: octo push --package="${{ github.workspace }}\output\OctopusSamples.OctoPetShop.Database.${{ github.run_number }}.zip" --server="${{ secrets.OCTOPUS_SERVER_URL }}" --apiKey="${{ secrets.OCTOPUS_API_KEY }}" --space="${{ secrets.OCTOPUS_SPACE }}"
+      run: octo push --package="${{ github.workspace }}\output\OctopusSamples.OctoPetShop.Database.1.${{ github.run_number }}.0.zip" --server="${{ secrets.OCTOPUS_SERVER_URL }}" --apiKey="${{ secrets.OCTOPUS_API_KEY }}" --space="${{ secrets.OCTOPUS_SPACE }}"
     - name: Push OctoPetShop Web
-      run: octo push --package="${{ github.workspace }}\output\OctopusSamples.OctoPetShop.Web.${{ github.run_number }}.zip" --server="${{ secrets.OCTOPUS_SERVER_URL }}" --apiKey="${{ secrets.OCTOPUS_API_KEY }}" --space="${{ secrets.OCTOPUS_SPACE }}"
+      run: octo push --package="${{ github.workspace }}\output\OctopusSamples.OctoPetShop.Web.1.${{ github.run_number }}.0.zip" --server="${{ secrets.OCTOPUS_SERVER_URL }}" --apiKey="${{ secrets.OCTOPUS_API_KEY }}" --space="${{ secrets.OCTOPUS_SPACE }}"
     - name: Push OctoPetShop ProductService
-      run: octo push --package="${{ github.workspace }}\output\OctopusSamples.OctoPetShop.ProductService.${{ github.run_number }}.zip" --server="${{ secrets.OCTOPUS_SERVER_URL }}" --apiKey="${{ secrets.OCTOPUS_API_KEY }}" --space="${{ secrets.OCTOPUS_SPACE }}"
+      run: octo push --package="${{ github.workspace }}\output\OctopusSamples.OctoPetShop.ProductService.1.${{ github.run_number }}.0.zip" --server="${{ secrets.OCTOPUS_SERVER_URL }}" --apiKey="${{ secrets.OCTOPUS_API_KEY }}" --space="${{ secrets.OCTOPUS_SPACE }}"
     - name: Push OctoPetShop ShoppingCartService
-      run: octo push --package="${{ github.workspace }}\output\OctopusSamples.OctoPetShop.ShoppingCartService.${{ github.run_number }}.zip" --server="${{ secrets.OCTOPUS_SERVER_URL }}" --apiKey="${{ secrets.OCTOPUS_API_KEY }}" --space="${{ secrets.OCTOPUS_SPACE }}"
-
+      run: octo push --package="${{ github.workspace }}\output\OctopusSamples.OctoPetShop.ShoppingCartService.1.${{ github.run_number }}.0.zip" --server="${{ secrets.OCTOPUS_SERVER_URL }}" --apiKey="${{ secrets.OCTOPUS_API_KEY }}" --space="${{ secrets.OCTOPUS_SPACE }}"
+    # Finally, we can create a Release
+    - name: Create Octopus Release
+      run: octo create-release --project="OctoPetShop" --defaultPackageVersion=1.${{ github.run_number }}.0 --version=1.${{ github.run_number }}.0 --server="${{ secrets.OCTOPUS_SERVER_URL }}" --apiKey="${{ secrets.OCTOPUS_API_KEY }}" --space="${{ secrets.OCTOPUS_SPACE }}"
 
                     

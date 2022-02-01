@@ -43,7 +43,7 @@ jobs:
       with:
         api_key: ${{ secrets.OCTOPUS_API_KEY }}
         project: "OctoPetShop"
-        server: ${{ secrets.OCTOPUS_SERVER }}
+        server: ${{ secrets.OCTOPUS_SERVER_URL }}
         space: ${{ secrets. OCTOPUS_SPACE }}
         defaultPackageVersion: 1.${{ github.run_number }}.0
         version: 1.${{ github.run_number }}.0

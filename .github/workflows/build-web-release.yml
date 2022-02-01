@@ -1,0 +1,51 @@
+name: Build-and-create-release
+
+on:
+  workflow_dispatch:
+
+env:
+  solution: '**/*.sln'
+  buildPlatform: Any CPU
+  buildConfiguration: Release
+
+jobs:
+  OctoPetShopBuild:
+    runs-on: windows-latest
+    steps:
+    
+    - uses: actions/checkout@v2
+    
+    - name: Install Octopus CLI
+      uses: OctopusDeploy/install-octopus-cli-action@v1.1.9
+    
+    - name: Install dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+    - name: Test
+      run: dotnet test --no-restore --verbosity normal
+
+    # dotnet publish
+    - name: Publish Web
+      run: dotnet publish ${{ github.workspace }}\OctopusSamples.OctoPetShop.Web/OctopusSamples.OctoPetShop.Web.csproj --configuration ${{ env.BuildConfiguration }} --output ${{ github.workspace }}\output\OctoPetShop.Web\
+    
+    # Pack the files into a zip
+    - name: Package OctopusSamples.OctoPetShop.Web
+      run: octo pack --id=OctopusSamples.OctoPetShop.Web --format=Zip --version=1.${{ github.run_number }}.0 --basePath=${{ github.workspace }}\output\OctoPetShop.Web\ --outFolder=${{ github.workspace }}\output
+
+    # Push the zip to the server
+    - name: Push OctoPetShop Web
+      run: octo push --package="${{ github.workspace }}\output\OctopusSamples.OctoPetShop.Web.1.${{ github.run_number }}.0.zip" --server="${{ secrets.OCTOPUS_SERVER_URL }}" --apiKey="${{ secrets.OCTOPUS_API_KEY }}" --space="${{ secrets.OCTOPUS_SPACE }}"
+
+    # Create a release
+    - name: Create a Release in Octopus
+      uses: OctopusDeploy/create-release-action@1.1.1
+      with:
+        api_key: ${{ secrets.OCTOPUS_API_KEY }}
+        project: "OctoPetShop"
+        server: ${{ secrets.OCTOPUS_SERVER }}
+        space: ${{ secrets. OCTOPUS_SPACE }}
+        defaultPackageVersion: 1.${{ github.run_number }}.0
+        version: 1.${{ github.run_number }}.0
+
+                    

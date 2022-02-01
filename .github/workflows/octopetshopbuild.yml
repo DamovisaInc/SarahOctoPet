@@ -3,9 +3,7 @@
 name: OctoPetShopAppBuild
 
 on:
-  push:
-    branches:
-    - main
+  workflow_dispatch:
 env:
   solution: '**/*.sln'
   buildPlatform: Any CPU

@@ -39,7 +39,7 @@ jobs:
 
     # Create a release
     - name: Create a Release in Octopus
-      uses: OctopusDeploy/create-release-action@1.1.1
+      uses: OctopusDeploy/create-release-action@v1.1.1
       with:
         api_key: ${{ secrets.OCTOPUS_API_KEY }}
         project: "OctoPetShop"

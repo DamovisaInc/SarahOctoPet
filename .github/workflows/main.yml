@@ -34,11 +34,11 @@ jobs:
       
     # Pack the files into a zip
     - name: Package OctopusSamples.OctoPetShop.Web
-      run: octo pack --id=OctopusSamples.OctoPetShop.Web --format=Zip --version=1.${{ github.run_number }}.0 --basePath=${{ github.workspace }}\output\OctoPetShop.Web\ --outFolder=${{ github.workspace }}\output
+      run: octo pack --id=OctopusSamples.OctoPetShop.Web --format=Zip --version=1.7.${{ github.run_number }} --basePath=${{ github.workspace }}\output\OctoPetShop.Web\ --outFolder=${{ github.workspace }}\output
 
     # Push the zip to the server
     - name: Push OctoPetShop Web
-      run: octo push --package="${{ github.workspace }}\output\OctopusSamples.OctoPetShop.Web.1.${{ github.run_number }}.0.zip" --server="${{ secrets.OCTOPUS_SERVER_URL }}" --apiKey="${{ secrets.OCTOPUS_API_KEY }}" --space="${{ secrets.OCTOPUS_SPACE }}"
+      run: octo push --package="${{ github.workspace }}\output\OctopusSamples.OctoPetShop.Web.1.7.${{ github.run_number }}.zip" --server="${{ secrets.OCTOPUS_SERVER_URL }}" --apiKey="${{ secrets.OCTOPUS_API_KEY }}" --space="${{ secrets.OCTOPUS_SPACE }}"
 
     # Create a release
     - name: Create a Release in Octopus
@@ -48,4 +48,4 @@ jobs:
         project: "OctoPetShop"
         server: ${{ secrets.OCTOPUS_SERVER_URL }}
         space: ${{ secrets. OCTOPUS_SPACE }}
-        version: 1.${{ github.run_number }}.0
+        version: 1.7.${{ github.run_number }}

@@ -15,9 +15,6 @@ jobs:
     
     - uses: actions/checkout@v2
     
-    - name: Install Octopus CLI
-      uses: OctopusDeploy/install-octopus-cli-action@v1.1.9
-    
     - name: Install dependencies
       run: dotnet restore
     - name: Build
@@ -49,10 +46,3 @@ jobs:
       with:
         name: octo-pet-shop
         path: .\OctoPetShop.Web\
-
-    #- name: Deploy to Test
-    #  uses: azure/webapps-deploy@v2
-    #  with: 
-    #    app-name: octopetshop-test
-    #    publish-profile: ${{ secrets.azureWebAppPublishProfile }}
-    #    package: .\OctoPetShop.Web\ 

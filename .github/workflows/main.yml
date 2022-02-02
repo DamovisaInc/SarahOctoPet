@@ -1,7 +1,9 @@
 name: Build-and-create-release
 
 on:
-  workflow_dispatch:
+  push:
+    branches:    
+      - 'main'
 
 env:
   solution: '**/*.sln'
@@ -14,6 +16,10 @@ jobs:
     steps:
     
     - uses: actions/checkout@v2
+
+    # install the Octopus CLI
+    - name: Install Octopus CLI
+      uses: OctopusDeploy/install-octopus-cli-action@v1.1.9
     
     - name: Install dependencies
       run: dotnet restore
@@ -26,24 +32,20 @@ jobs:
     - name: Publish Web
       run: dotnet publish ${{ github.workspace }}\OctopusSamples.OctoPetShop.Web/OctopusSamples.OctoPetShop.Web.csproj --configuration ${{ env.BuildConfiguration }} --output ${{ github.workspace }}\output\OctoPetShop.Web\
       
-    # upload our artifact
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v2
+    # Pack the files into a zip
+    - name: Package OctopusSamples.OctoPetShop.Web
+      run: octo pack --id=OctopusSamples.OctoPetShop.Web --format=Zip --version=1.${{ github.run_number }}.0 --basePath=${{ github.workspace }}\output\OctoPetShop.Web\ --outFolder=${{ github.workspace }}\output
+
+    # Push the zip to the server
+    - name: Push OctoPetShop Web
+      run: octo push --package="${{ github.workspace }}\output\OctopusSamples.OctoPetShop.Web.1.${{ github.run_number }}.0.zip" --server="${{ secrets.OCTOPUS_SERVER_URL }}" --apiKey="${{ secrets.OCTOPUS_API_KEY }}" --space="${{ secrets.OCTOPUS_SPACE }}"
+
+    # Create a release
+    - name: Create a Release in Octopus
+      uses: OctopusDeploy/create-release-action@v1.1.1
       with:
-        name: octo-pet-shop
-        path: ${{ github.workspace }}\output\OctoPetShop.Web\
-
-  # Deploy our artifact to Test
-  DeployToTest:
-    runs-on: windows-latest
-    needs: OctoPetShopBuild
-    environment: Test
-
-    steps:
-
-    - name: Download Artifact
-      uses: actions/download-artifact@v2
-      with:
-        name: octo-pet-shop
-        path: .\OctoPetShop.Web\
-
+        api_key: ${{ secrets.OCTOPUS_API_KEY }}
+        project: "OctoPetShop"
+        server: ${{ secrets.OCTOPUS_SERVER_URL }}
+        space: ${{ secrets. OCTOPUS_SPACE }}
+        version: 1.${{ github.run_number }}.0

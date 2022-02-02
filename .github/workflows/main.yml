@@ -1,0 +1,29 @@
+name: Build-and-create-release
+
+on:
+  workflow_dispatch:
+
+env:
+  solution: '**/*.sln'
+  buildPlatform: Any CPU
+  buildConfiguration: Release
+
+jobs:
+  OctoPetShopBuild:
+    runs-on: windows-latest
+    steps:
+    
+    - uses: actions/checkout@v2
+    
+    - name: Install dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+    - name: Test
+      run: dotnet test --no-restore --verbosity normal
+
+    # dotnet publish
+    - name: Publish Web
+      run: dotnet publish ${{ github.workspace }}\OctopusSamples.OctoPetShop.Web/OctopusSamples.OctoPetShop.Web.csproj --configuration ${{ env.BuildConfiguration }} --output ${{ github.workspace }}\output\OctoPetShop.Web\
+      
+    
